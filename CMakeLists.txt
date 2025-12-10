@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(templ VERSION 1.0 LANGUAGES CXX)
+project(sheep VERSION 1.0 LANGUAGES CXX)
 
 # Options
 option(BUILD_SHARED "Build shared library" ON)
@@ -14,39 +14,44 @@ set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # sources
 set(HEADER_FILES
-        "${INCLUDE_DIR}/templ.h"
-        "${INCLUDE_DIR}/ignore.h"
+        "${INCLUDE_DIR}/fast/fileio.h"
+        "${INCLUDE_DIR}/fast/circ_buf.h"
+        "${INCLUDE_DIR}/cli/argparse.h"
 )
 
 set(SOURCE_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/templ.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/fast/fileio.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/fast/circ_buf.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/cli/argparse.cpp"
 )
 
 # publicly exposed header files
 set(EXPORT_FILES
-		"${INCLUDE_DIR}/templ.h"
+        "${INCLUDE_DIR}/fast/fileio.h"
+        "${INCLUDE_DIR}/fast/circ_buf.h"
+        "${INCLUDE_DIR}/cli/argparse.h"
 )
 
 # build as shared lib
 if(BUILD_SHARED)
-    add_library(templ_shared SHARED ${SOURCE_FILES})
-    set_target_properties(templ_shared PROPERTIES OUTPUT_NAME "templ_shared")
-    target_include_directories(templ_shared PUBLIC
+    add_library(sheep_shared SHARED ${SOURCE_FILES})
+    set_target_properties(sheep_shared PROPERTIES OUTPUT_NAME "sheep_shared")
+    target_include_directories(sheep_shared PUBLIC
 			"$<BUILD_INTERFACE:${INCLUDE_DIR}>"
 			"$<INSTALL_INTERFACE:include>"
 	)
-    add_library(templ::templ_shared ALIAS templ_shared)
+    add_library(sheep::sheep_shared ALIAS sheep_shared)
 endif()
 
 # build as static lib
 if(BUILD_STATIC)
-    add_library(templ_static STATIC ${SOURCE_FILES})
-    set_target_properties(templ_static PROPERTIES OUTPUT_NAME "templ")
-    target_include_directories(templ_static PUBLIC
+    add_library(sheep_static STATIC ${SOURCE_FILES})
+    set_target_properties(sheep_static PROPERTIES OUTPUT_NAME "sheep")
+    target_include_directories(sheep_static PUBLIC
 			"$<BUILD_INTERFACE:${INCLUDE_DIR}>"
 			"$<INSTALL_INTERFACE:include>"
 	)
-    add_library(templ::templ_static ALIAS templ_static)
+    add_library(sheep::sheep_static ALIAS sheep_static)
 endif()
 
 # installation
@@ -57,8 +62,8 @@ install(FILES ${EXPORT_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # install libraries
 if(BUILD_SHARED)
-    install(TARGETS templ_shared
-        EXPORT templTargets
+    install(TARGETS sheep_shared
+        EXPORT sheepTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -66,8 +71,8 @@ if(BUILD_SHARED)
 endif()
 
 if(BUILD_STATIC)
-    install(TARGETS templ_static
-        EXPORT templTargets
+    install(TARGETS sheep_static
+        EXPORT sheepTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -75,43 +80,43 @@ if(BUILD_STATIC)
 endif()
 
 # export targets for find_package
-install(EXPORT templTargets
-    FILE templTargets.cmake
-    NAMESPACE templ::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/templ"
+install(EXPORT sheepTargets
+    FILE sheepTargets.cmake
+    NAMESPACE sheep::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sheep"
 )
 
-# generate templConfig.cmake and templConfigVersion.cmake
+# generate sheepConfig.cmake and sheepConfigVersion.cmake
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/templConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/sheepConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
 configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/templConfig.cmake"
-    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/templ"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sheepConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/sheepConfig.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sheep"
 )
 
 install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/templConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/templConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/templ"
+    "${CMAKE_CURRENT_BINARY_DIR}/sheepConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/sheepConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sheep"
 )
 
 # setup CTest
-add_executable(templ_test "test/templ_test.cpp")
+add_executable(sheep_test "test/sheep_test.cpp")
 
 if(BUILD_STATIC)
-    target_link_libraries(templ_test PRIVATE templ_static)
+    target_link_libraries(sheep_test PRIVATE sheep_static)
 elseif(BUILD_SHARED)
-    target_link_libraries(templ_test PRIVATE templ_shared)
+    target_link_libraries(sheep_test PRIVATE sheep_shared)
 endif()
 
-target_include_directories(templ_test PRIVATE "../lib/include")
+target_include_directories(sheep_test PRIVATE "../lib/include")
 
 enable_testing()
-add_test(NAME templ_test COMMAND templ_test)
+add_test(NAME sheep_test COMMAND sheep_test)
