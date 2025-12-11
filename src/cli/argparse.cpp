@@ -4,7 +4,6 @@
 using namespace sheep;
 
 //-------------------------------------------------------
-ArgParse::ArgParse(int argc, char *argv[])
-    :m_args(argv, argv + argc)
+ArgParse::ArgParse(int argc, char *argv[]) : m_args(argv, argv + argc)
 {
 }

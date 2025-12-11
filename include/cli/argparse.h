@@ -1,26 +1,28 @@
 #ifndef ARGPARSE_H
 #define ARGPARSE_H
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace sheep {
+namespace sheep
+{
+/*
+ * argparse can be used to easily parse optional and mandatory arguments from the commandline
+ */
+class ArgParse
+{
+  public:
     /*
-     * argparse can be used to easily parse optional and mandatory arguments from the commandline
+     * Constructor
      */
-    class ArgParse {
-    public:
-        /*
-         * Constructor
-         */
-        ArgParse(int argc, char *argv[]);
+    ArgParse(int argc, char *argv[]);
 
-        /*
-         * Destructor
-         */
-        ~ArgParse() = default;
+    /*
+     * Destructor
+     */
+    ~ArgParse() = default;
 
-    private:
-        std::vector<std::string> m_args;
-    };
-}
+  private:
+    std::vector<std::string> m_args;
+};
+} // namespace sheep
 #endif // ARGPARSE_H
