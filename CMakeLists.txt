@@ -21,8 +21,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/fast/fileio.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/fast/circ_buf.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/cli/argparse.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/cli/argparse.cpp"
 )
 
 # publicly exposed header files
@@ -107,16 +106,20 @@ install(FILES
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sheep"
 )
 
-# setup CTest
-add_executable(sheep_test "test/sheep_test.cpp")
+# setup GoogleTest
+enable_testing()
+find_package(GTest REQUIRED)
+include(GoogleTest)
+
+add_executable(tests "test/main.cpp" 
+	"test/circ_buf_test.cpp"
+)
 
 if(BUILD_STATIC)
-    target_link_libraries(sheep_test PRIVATE sheep_static)
+    target_link_libraries(tests PRIVATE sheep_static GTest::GTest GTest::Main)
 elseif(BUILD_SHARED)
-    target_link_libraries(sheep_test PRIVATE sheep_shared)
+    target_link_libraries(tests PRIVATE sheep_shared GTest::GTest GTest::Main)
 endif()
+target_include_directories(tests PRIVATE "../lib/include")
 
-target_include_directories(sheep_test PRIVATE "../lib/include")
-
-enable_testing()
-add_test(NAME sheep_test COMMAND sheep_test)
+gtest_discover_tests(tests)

@@ -31,7 +31,7 @@ install: release
 
 test: 	install_local
 	@echo "running tests in debug..."
-	cd $(DEBUG_DIR) && make templ_test && ctest
+	cd $(DEBUG_DIR) && make tests && ./tests
 
 	@echo "running tests in release..."
-	cd $(RELEASE_DIR) && make templ_test && ctest
+	cd $(RELEASE_DIR) && make tests && ./tests
