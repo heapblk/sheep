@@ -10,11 +10,15 @@ namespace sheep
 template <class T> class CircBuf
 {
   public:
-    explicit CircBuf(const int size) : m_buf_size(size), m_occupation(0), m_override(false) {};
+    explicit CircBuf(const int size) : m_buf_size(size), m_occupation(0), m_override(false)
+    {
+        m_buf.reserve(m_buf_size);
+    };
+
     /*
-     * adds one element to the circular buffer
-     * returns false once the buffer is full, otherwise returns true
-     * except if the override is set, then it'll always return true and override elements
+     * appends one element to the circular buffer
+     * returns false once the buffer is full and doesn't append the given element, otherwise returns true and appends
+     * the given element except if the override is set, then it'll always return true and override elements
      */
     bool push_back(T element)
     {
@@ -68,10 +72,10 @@ template <class T> class CircBuf
     /*
      * clears internal data array
      */
-    ///IMPL: sort of a pseudo clear, simply releases all objects so they can be overwritten
+    /// IMPL: sort of a pseudo clear, simply releases all objects so they can be overwritten
     void clear()
     {
-        m_occupation = 0;
+        m_override = true;
     };
 
     /*
