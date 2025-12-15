@@ -38,13 +38,19 @@ TEST(CircBuf, set_override)
 
     // should return true and override the element at(0)
     EXPECT_EQ(_v_circ_buf.at(0), 10);
+
+    EXPECT_TRUE(_v_circ_buf.push_back(400));
+    EXPECT_EQ(_v_circ_buf.at(1), 400);
+
+    // index wraps around, so the first element should be overwritten again
+    EXPECT_TRUE(_v_circ_buf.push_back(1337));
+    EXPECT_EQ(_v_circ_buf.at(0), 1337);
 }
 
 TEST(CircBuf, clear)
 {
     CircBuf<int> _v_circ_buf(2);
     _v_circ_buf.push_back(400);
-    _v_circ_buf.push_back(1337);
 
     _v_circ_buf.clear();
 
@@ -52,11 +58,31 @@ TEST(CircBuf, clear)
     // deleting them or setting them to 0
     EXPECT_TRUE(_v_circ_buf.push_back(10));
     EXPECT_EQ(_v_circ_buf.at(0), 10);
+
+    EXPECT_TRUE(_v_circ_buf.push_back(1337));
+    EXPECT_EQ(_v_circ_buf.at(1), 1337);
+
+    // clear should not function like it just set the
+    // overwrite flag, so once the buffer is full again
+    // appending elements doesn't work anymore
+    EXPECT_FALSE(_v_circ_buf.push_back(400));
+    EXPECT_EQ(_v_circ_buf.at(0), 10);
 }
 
 TEST(CircBuf, resize)
 {
-    ASSERT_TRUE(true) << "tested in push_back";
+    CircBuf<int> _v_circ_buf(2);
+    _v_circ_buf.push_back(400);
+    _v_circ_buf.push_back(1337);
+
+    EXPECT_FALSE(_v_circ_buf.push_back(10));
+
+    _v_circ_buf.resize(3);
+
+    EXPECT_TRUE(_v_circ_buf.push_back(10));
+    EXPECT_EQ(_v_circ_buf.at(2), 10);
+
+    EXPECT_EQ(_v_circ_buf.size(), 3);
 }
 
 TEST(CircBuf, size)

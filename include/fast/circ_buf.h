@@ -1,5 +1,6 @@
 #ifndef CIRC_BUF_H
 #define CIRC_BUF_H
+#include <iostream>
 #include <vector>
 
 namespace sheep
@@ -10,9 +11,9 @@ namespace sheep
 template <class T> class CircBuf
 {
   public:
-    explicit CircBuf(const int size) : m_buf_size(size), m_occupation(0), m_override(false)
+    explicit CircBuf(const int size) : m_occupation(0), m_override(false)
     {
-        m_buf.reserve(m_buf_size);
+        m_buf.resize(size);
     };
 
     /*
@@ -22,41 +23,49 @@ template <class T> class CircBuf
      */
     bool push_back(T element)
     {
-        bool success = false;
+        bool _success = false;
         // there is no space anymore
-        if (m_occupation >= m_buf_size)
+        if (m_occupation >= m_buf.size())
         {
             // override flag is set, so start overwriting
-            if (m_override)
+            if (m_override || m_clear)
             {
-                m_buf.at(m_current_element_index) = element;
+                this->at(m_current_element_index) = element;
                 m_current_element_index++;
-                success = true;
+
+                // once we reach the end of the buffer,
+                // we'll have to unset the clear flag to avoid
+                // overriding the first elements
+                if (m_current_element_index == m_buf.size())
+                {
+                    m_clear = false;
+                }
+                _success = true;
             }
             else
             {
-                success = false;
+                _success = false;
             }
         }
         else
         {
             // there is still space for a new element
-            m_buf.push_back(element);
+            m_buf.at(m_occupation) = element;
             m_occupation++;
-            success = true;
+            _success = true;
         }
-        return success;
+        return _success;
     };
 
     /*
      * returns the element at the current index
      * NOTE: the index wraps around
      */
-    T at(int index)
+    T &at(int index)
     {
-        while (index >= m_buf_size)
+        while (index >= m_buf.size())
         {
-            index = m_buf_size % index;
+            index = m_buf.size() % index;
         }
         return m_buf.at(index);
     }
@@ -75,7 +84,8 @@ template <class T> class CircBuf
     /// IMPL: sort of a pseudo clear, simply releases all objects so they can be overwritten
     void clear()
     {
-        m_override = true;
+        m_clear = true;
+        m_occupation = m_buf.size();
     };
 
     /*
@@ -83,8 +93,10 @@ template <class T> class CircBuf
      */
     void resize(const int size)
     {
+        m_buf.resize(size);
+
         // new buffer size so that .at works correctly
-        m_buf_size = size;
+        // m_buf_size = size;
     };
 
     /*
@@ -92,15 +104,16 @@ template <class T> class CircBuf
      */
     int size() const
     {
-        return m_buf_size;
+        return m_buf.size();
     };
 
   private:
     std::vector<T> m_buf;
-    int m_buf_size; // semi constant size that can't be changed but with a call to .resize; indexed at 1
+    // int m_buf_size; // semi constant size that can't be changed but with a call to .resize; indexed at 1
     int m_occupation;
     bool m_override;
     int m_current_element_index = 0;
+    bool m_clear = false;
 };
 } // namespace sheep
 #endif // CIRC_BUF_H
