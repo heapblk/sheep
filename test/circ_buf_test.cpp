@@ -1,4 +1,4 @@
-#include <fast/circ_buf.h>
+#include <circ_buf.h>
 #include <gtest/gtest.h>
 
 using namespace sheep;
@@ -88,4 +88,81 @@ TEST(CircBuf, resize)
 TEST(CircBuf, size)
 {
     ASSERT_TRUE(true) << "tested in push_back";
+}
+
+// PERFORMANCE TEST ----------------------------------------------------------------
+
+// basic buf implementation using a linked list
+struct Node
+{
+    int data;
+    Node *next;
+};
+
+struct List
+{
+    Node *head;
+    Node *tail;
+};
+
+void init(List &l)
+{
+    l.head = l.tail = nullptr;
+}
+
+static Node pool[10000];
+int poolIndex = 0;
+
+Node *allocNode(int v)
+{
+    pool[poolIndex] = {v, nullptr};
+    return &pool[poolIndex++];
+}
+
+void push_back(List &l, int value)
+{
+    Node *n = allocNode(value);
+
+    if (!l.head)
+    {
+        l.head = l.tail = n;
+    }
+    else
+    {
+        l.tail->next = n;
+        l.tail = n;
+    }
+}
+
+TEST(CircBuf, Performance)
+{
+    // push_back ---------------------------------------------------------------------------------------------------------------------
+    CircBuf<int> _v_circ_buf(10000);
+    auto _circ_start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < 10000; i++)
+    {
+        _v_circ_buf.push_back(i);
+    }
+    auto _circ_end = std::chrono::high_resolution_clock::now();
+
+    auto _circ_insert_time_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(_circ_end - _circ_start).count();
+
+    List _list{};
+    init(_list);
+
+    auto _linked_start = std::chrono::high_resolution_clock::now();
+
+    for (int i = 0; i < 10000; ++i)
+    {
+        push_back(_list, i);
+    }
+
+    auto _linked_end = std::chrono::high_resolution_clock::now();
+    auto _linked_insert_time_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(_linked_end - _linked_start).count();
+
+    printf("CIRC: %lins\n", _circ_insert_time_ns);
+    printf("LIST: %lins\n", _linked_insert_time_ns);
+
+    ASSERT_TRUE(_circ_insert_time_ns < _linked_insert_time_ns);
 }

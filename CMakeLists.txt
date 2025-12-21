@@ -12,10 +12,22 @@ set(CMAKE_CXX_STANDARD 17)
 # paths
 set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+include(FetchContent)
+
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.17.0
+)
+
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 # sources
 set(HEADER_FILES
+        "${INCLUDE_DIR}/circ_buf.h"
         "${INCLUDE_DIR}/fast/fileio.h"
-        "${INCLUDE_DIR}/fast/circ_buf.h"
         "${INCLUDE_DIR}/cli/argparse.h"
 )
 
@@ -26,8 +38,8 @@ set(SOURCE_FILES
 
 # publicly exposed header files
 set(EXPORT_FILES
+        "${INCLUDE_DIR}/circ_buf.h"
         "${INCLUDE_DIR}/fast/fileio.h"
-        "${INCLUDE_DIR}/fast/circ_buf.h"
         "${INCLUDE_DIR}/cli/argparse.h"
 )
 
@@ -108,18 +120,18 @@ install(FILES
 
 # setup GoogleTest
 enable_testing()
-find_package(GTest REQUIRED)
-include(GoogleTest)
+find_package(GTest)
 
 add_executable(tests "test/main.cpp" 
 	"test/circ_buf_test.cpp"
 )
 
 if(BUILD_STATIC)
-    target_link_libraries(tests PRIVATE sheep_static GTest::GTest GTest::Main)
+    target_link_libraries(tests PRIVATE sheep_static GTest::gtest_main)
 elseif(BUILD_SHARED)
-    target_link_libraries(tests PRIVATE sheep_shared GTest::GTest GTest::Main)
+    target_link_libraries(tests PRIVATE sheep_shared GTest::gtest_main)
 endif()
 target_include_directories(tests PRIVATE "../lib/include")
 
+include(GoogleTest)
 gtest_discover_tests(tests)

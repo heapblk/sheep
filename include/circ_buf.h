@@ -1,6 +1,5 @@
 #ifndef CIRC_BUF_H
 #define CIRC_BUF_H
-#include <iostream>
 #include <vector>
 
 namespace sheep
@@ -10,16 +9,33 @@ namespace sheep
  */
 template <class T> class CircBuf
 {
-  public:
-    explicit CircBuf(const int size) : m_occupation(0), m_override(false)
+public:
+    /*
+     * Size constructor
+     */
+    explicit CircBuf(const int size)
     {
         m_buf.resize(size);
     };
 
     /*
+     * Vector constructor
+     * NOTE: it is assumed that the whole vector is filled with data that's going to be used
+     */
+    explicit CircBuf(const std::vector<T> &vec) : m_occupation(vec.size())
+    {
+        m_buf = vec;
+    }
+
+    /*
+     * Destructor
+     */
+    ~CircBuf() = default;
+
+    /*
      * appends one element to the circular buffer
-     * returns false once the buffer is full and doesn't append the given element, otherwise returns true and appends
-     * the given element except if the override is set, then it'll always return true and override elements
+     * returns false once the buffer is full and doesn't append the given element, otherwise returns true and
+     * appends the given element except if the override is set, then it'll always return true and override elements
      */
     bool push_back(T element)
     {
@@ -102,16 +118,16 @@ template <class T> class CircBuf
     /*
      * returns the current circbuf size
      */
+    [[nodiscard]]
     int size() const
     {
         return m_buf.size();
     };
 
-  private:
+private:
     std::vector<T> m_buf;
-    // int m_buf_size; // semi constant size that can't be changed but with a call to .resize; indexed at 1
-    int m_occupation;
-    bool m_override;
+    int m_occupation = 0;
+    bool m_override = false;
     int m_current_element_index = 0;
     bool m_clear = false;
 };
