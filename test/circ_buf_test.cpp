@@ -136,28 +136,29 @@ void push_back(List &l, int value)
 
 TEST(CircBuf, Performance)
 {
-    // push_back ---------------------------------------------------------------------------------------------------------------------
+    // push_back
+    // ---------------------------------------------------------------------------------------------------------------------
     CircBuf<int> _v_circ_buf(10000);
     auto _circ_start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < 10000; i++)
     {
         _v_circ_buf.push_back(i);
     }
-    auto _circ_end = std::chrono::high_resolution_clock::now();
+    auto _circ_end = std::chrono::system_clock::now();
 
     auto _circ_insert_time_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(_circ_end - _circ_start).count();
 
     List _list{};
     init(_list);
 
-    auto _linked_start = std::chrono::high_resolution_clock::now();
+    auto _linked_start = std::chrono::system_clock::now();
 
     for (int i = 0; i < 10000; ++i)
     {
         push_back(_list, i);
     }
 
-    auto _linked_end = std::chrono::high_resolution_clock::now();
+    auto _linked_end = std::chrono::system_clock::now();
     auto _linked_insert_time_ns =
         std::chrono::duration_cast<std::chrono::nanoseconds>(_linked_end - _linked_start).count();
 
