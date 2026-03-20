@@ -1,17 +1,18 @@
-#ifndef CIRC_BUF_H
-#define CIRC_BUF_H
+#pragma once
 #include <vector>
 
 namespace sheep
 {
 /*
- * faster circular buffer implementation using a dynamic array
+ * @brief faster circular buffer implementation using a dynamic array
  */
 template <class T> class CircBuf
 {
 public:
     /*
-     * Size constructor
+     * @brief Size constructor
+     * 
+     * @param size initial size of the buffer
      */
     explicit CircBuf(const int size)
     {
@@ -19,7 +20,9 @@ public:
     };
 
     /*
-     * Vector constructor
+     * @brief Vector constructor
+     * 
+     * @param vec vector which contains data 
      * NOTE: it is assumed that the whole vector is filled with data that's going to be used
      */
     explicit CircBuf(const std::vector<T> &vec) : m_occupation(vec.size())
@@ -28,7 +31,7 @@ public:
     }
 
     /*
-     * Destructor
+     * @brief Destructor
      */
     ~CircBuf() = default;
 
@@ -132,4 +135,3 @@ private:
     bool m_clear = false;
 };
 } // namespace sheep
-#endif // CIRC_BUF_H

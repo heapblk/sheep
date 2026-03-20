@@ -1,10 +1,12 @@
-#ifndef ARGPARSE_H
-#define ARGPARSE_H
+#pragma once
 #include <string>
 #include <vector>
 
 namespace sheep {
 
+/*
+* @brief struct which configures an argument
+*/
 struct st_arg {
   std::string s_long; // long argument name
   std::string s_short; // short argument name
@@ -17,47 +19,60 @@ struct st_arg {
 };
 
 /*
- * argparse can be used to easily parse optional and mandatory arguments from
- * the commandline its modeled after pythons argparse
+ * @brief easily parse optional and mandatory arguments from the commandline 
  */
 class ArgParse {
 public:
   /*
-   * Constructor
+   * @brief Constructor
+   * 
+   * @param v_arguments configured known arguments
+   * @param argc number of arguments received
+   * @param argv array holding received arguments
    */
   ArgParse(const std::vector<st_arg>& v_arguments, int argc, char *argv[]);
 
-  //TODO: remove after testing (lol)
-  ArgParse(const std::vector<st_arg>& v_arguments, const std::vector<std::string> &v_given_arguments);
-
   /*
-   * Destructor
+  * @brief Constructor
+  *
+  * @param v_arguments configured known arguments
+  * @param v_given_arguments received arguments
+  */
+  ArgParse(const std::vector<st_arg>& v_arguments, const std::vector<std::string> &v_given_arguments);
+  
+  /*
+   * @brief Destructor
    */
   ~ArgParse() = default;
 
   /*
-   * adds an argument
+   * @brief adds an argument
+   * 
+   * @param st_argument known argument configuration struct
    */
   void add_argument(const st_arg &st_argument);
 
   /*
-   * adds a list of arguments
+   * @brief adds a list of arguments
+   * 
+   * @param v_arguments configured known arguments
    */
   void add_arguments(const std::vector<st_arg> &v_arguments);
 
   /*
-   * clears all set arguments
+   * @brief clears all set arguments
    */
   void clear_arguments();
 
   /*
-   * returns a list of all parsed arguments
+   * @brief parses and returns a list of all parsed arguments
+   * 
+   * @return list of parsed arguments
    */
   std::vector<st_arg> parse(void) const;
 
 private:
-  std::vector<st_arg> m_args;
-  std::vector<std::string> m_raw_arguments;
+  std::vector<st_arg> m_args; // configured known arguments
+  std::vector<std::string> m_raw_arguments; // all received arguments
 };
 } // namespace sheep
-#endif // ARGPARSE_H
