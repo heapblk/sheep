@@ -26,20 +26,17 @@ FetchContent_MakeAvailable(googletest)
 
 # sources
 set(HEADER_FILES
-        "${INCLUDE_DIR}/circ_buf.h"
-        "${INCLUDE_DIR}/fast/fileio.h"
+        "${INCLUDE_DIR}/containers/circ_buf.h"
         "${INCLUDE_DIR}/cli/argparse.h"
 )
 
 set(SOURCE_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/fast/fileio.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/cli/argparse.cpp"
 )
 
 # publicly exposed header files
 set(EXPORT_FILES
-        "${INCLUDE_DIR}/circ_buf.h"
-        "${INCLUDE_DIR}/fast/fileio.h"
+        "${INCLUDE_DIR}/containers/circ_buf.h"
         "${INCLUDE_DIR}/cli/argparse.h"
 )
 
@@ -124,6 +121,7 @@ find_package(GTest)
 
 add_executable(tests "test/main.cpp" 
 	"test/circ_buf_test.cpp"
+    "test/argparse_test.cpp"
 )
 
 if(BUILD_STATIC)
