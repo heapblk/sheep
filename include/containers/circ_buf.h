@@ -36,9 +36,12 @@ public:
     ~CircBuf() = default;
 
     /*
-     * appends one element to the circular buffer
-     * returns false once the buffer is full and doesn't append the given element, otherwise returns true and
-     * appends the given element except if the override is set, then it'll always return true and override elements
+     * @brief appends one element to the circular buffer
+     * 
+     * @param element element to append
+     * 
+     * @return returns false once the buffer is full and doesn't append the given element, otherwise returns true and
+     *         appends the given element except if the override is set, then it'll always return true and override elements
      */
     bool push_back(T element)
     {
@@ -77,8 +80,12 @@ public:
     };
 
     /*
-     * returns the element at the current index
+     * @brief returns the element at the current index
+     * 
+     * @param index
      * NOTE: the index wraps around
+     * 
+     * @return element at given index
      */
     T &at(int index)
     {
@@ -90,7 +97,9 @@ public:
     }
 
     /*
-     * sets whether push_back should simply override the elements when the buffer is full
+     * @brief sets whether push_back should simply override the elements when the buffer is full
+     * 
+     * @param override true if override should be enabled, otherwise false
      */
     void set_override(bool override)
     {
@@ -98,7 +107,7 @@ public:
     };
 
     /*
-     * clears internal data array
+     * @brief clears internal data array
      */
     /// IMPL: sort of a pseudo clear, simply releases all objects so they can be overwritten
     void clear()
@@ -108,18 +117,19 @@ public:
     };
 
     /*
-     * allocate memory based on new size
+     * @brief allocate memory based on new size
+     * 
+     * @param size amount of new memory cells to allocat
      */
     void resize(const int size)
     {
         m_buf.resize(size);
-
-        // new buffer size so that .at works correctly
-        // m_buf_size = size;
     };
 
     /*
-     * returns the current circbuf size
+     * @brief returns the current circbuf size
+     * 
+     * @return current size
      */
     [[nodiscard]]
     int size() const
@@ -128,10 +138,10 @@ public:
     };
 
 private:
-    std::vector<T> m_buf;
-    int m_occupation = 0;
-    bool m_override = false;
-    int m_current_element_index = 0;
-    bool m_clear = false;
+    std::vector<T> m_buf; // internal buffer
+    int m_occupation = 0; // occupied memory cells in buffer
+    bool m_override = false; // override flag
+    int m_current_element_index = 0; // current element index
+    bool m_clear = false; // clear flag
 };
 } // namespace sheep
