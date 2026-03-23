@@ -31,16 +31,24 @@ install: release
 	@echo "installing..."
 	cd $(RELEASE_DIR) && make install
 
-debug_test: debug
+debug_tests: debug
 	@echo "running tests in debug..."
 	cd $(DEBUG_DIR) && make tests && ./tests
 
-release_test: release
+run_debug_tests:
+	@echo "running tests in debug..."
+	cd $(DEBUG_DIR) && ./tests
+
+release_tests: release
 	@echo "running tests in release..."
 	cd $(RELEASE_DIR) && make tests && ./tests
 
+run_release_tests:
+	@echo "running tests in release..."
+	cd $(RELEASE_DIR) && ./tests
 
-test: 	install_local
+
+tests: 	install_local
 	@echo "running tests in debug..."
 	cd $(DEBUG_DIR) && make tests && ./tests
 
